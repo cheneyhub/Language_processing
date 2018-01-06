@@ -1,0 +1,63 @@
+#_*_conding:uft-8_*_
+'''
+Version: 0.0.1
+Date: 2018-01-01
+@Author:Cheney
+'''
+'''
+This program is used for analyzing the emotion, when you input some sentences, the model can 
+output evaluation emotion for the sentences
+Knowledge:
+Data--> nltk.corpus movie_reviews,
+Model--> NaiveBayesClassifer
+According to nltk module
+'''
+
+import nltk.classify.util
+from nltk.classify import NaiveBayesClassifier
+from nltk.corpus import   movie_reviews
+
+#Define features getting function
+def extract_feature(word_list):
+    return dict([(word, True) for word in word_list])
+
+if __name__ == "__main__":
+   
+    positive_fields = movie_reviews.fields("pos")
+    negative_fields = movie_reviews.fields("neg")
+
+    feature_positive = [(extract_feature(movie_reviews.words(fields=[f])), 'Positive') for f in positive_fields]
+    feature_negative = [(extract_feature(movie_reviews.words(fields=[f])), 'Negative') for f in negative_fields]
+
+    threshold_factor = 0.8
+    threshold_positive = int(threshold_factor * len(feature_positive))
+    threshold_negative = int(threshold_factor * len(feature_negative))
+
+    #Get the features
+    feature_train = feature_positive[: threshold_positive] + feature_negative[: threshold_negative]
+    feature_test  = feature_positive[threshold_positive: ] + feature_negative[threshold_negative:]
+    print ("Length of feature train and test:", len(feature_train),   len(feature_test))
+
+    #Training data
+    nb_classifier = NaiveBayesClassifier.train(feature_train)
+    print('\nAccuarcy of the classifier:',nltk.classify.util.accuracy(nb_classifier, feature_test))
+    print("\nTop10 most informative words:")
+    for item in nb_classifier.most_informative_features()[:10]:
+        print (item[0])
+
+    #Test the randomly input
+    input_reviews = [
+        "Tt is an amazing movie.",
+        "This is dull movie. I would never recommand it to anyone.",
+        "The cinematography is pretty great in this movie",
+        "The direction was terrible and the story was all over the place"
+    ]
+
+    print ("\nPredictions:")
+    for review in input_reviews:
+        print ('Reviws:', review)
+        probdist = nb_classifier.prob_classify(extract_feature(review.split()))
+        pred_sentiment = probdist.max()
+
+        print("Prediction sentiment:",pred_sentiment)
+        print("Probability:", round(probdist.prob(pred_sentiment),2))
