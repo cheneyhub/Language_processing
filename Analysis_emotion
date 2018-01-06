@@ -61,3 +61,6 @@ if __name__ == "__main__":
 
         print("Prediction sentiment:",pred_sentiment)
         print("Probability:", round(probdist.prob(pred_sentiment),2))
+
+
+
