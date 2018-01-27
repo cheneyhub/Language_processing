@@ -17,7 +17,7 @@ I-read data, II-use regular method to get words; III-calcuate the words
 import re
 
 #Read data from text document
-word_data = open("blog_en_sent_100.txt")
+word_data = open("en_sent_100.txt")
 
 word_list = []
 sent_length = []
